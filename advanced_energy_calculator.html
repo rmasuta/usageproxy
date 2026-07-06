@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Energy Usage Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+        
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 20px;
+            margin-top: 0;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .button-grid {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        
+        button.option-btn {
+            padding: 14px 16px;
+            text-align: left;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #0f172a;
+            transition: all 0.2s;
+        }
+        
+        button.option-btn:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        button.option-btn.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .info-text {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+        
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        button.primary {
+            flex: 1;
+            padding: 12px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button.primary:hover {
+            background: #2563eb;
+        }
+        
+        button.primary:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+        
+        button.secondary {
+            flex: 1;
+            padding: 12px;
+            background: #f1f5f9;
+            color: #0f172a;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button.secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        button.success {
+            flex: 1;
+            padding: 12px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button.success:hover {
+            background: #059669;
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        
+        .result-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+        
+        .result-number {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .result-unit {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-top: 4px;
+        }
+        
+        .breakdown {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .breakdown h3 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #334155;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .breakdown-total {
+            border-top: 1px solid #cbd5e1;
+            padding-top: 8px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        
+        .breakdown-total strong {
+            color: #3b82f6;
+        }
+        
+        .info-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #166534;
+            line-height: 1.6;
+        }
+        
+        .adjustments {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #92400e;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced Energy Calculator</h1>
+        <p class="subtitle">Accurate estimates accounting for climate, building age, and operating patterns</p>
+
+        <!-- STEP 1: Business Type -->
+        <div id="step1" class="step">
+            <div class="step-label">Step 1 of 6</div>
+            <h2>What type of business?</h2>
+            <div class="button-grid">
+                <button class="option-btn" onclick="selectBusiness('office')">Office</button>
+                <button class="option-btn" onclick="selectBusiness('retail')">Retail Store</button>
+                <button class="option-btn" onclick="selectBusiness('restaurant')">Restaurant</button>
+                <button class="option-btn" onclick="selectBusiness('warehouse')">Warehouse</button>
+                <button class="option-btn" onclick="selectBusiness('manufacturing')">Light Manufacturing</button>
+                <button class="option-btn" onclick="selectBusiness('gym')">Gym/Fitness</button>
+                <button class="option-btn" onclick="selectBusiness('school')">School/University</button>
+                <button class="option-btn" onclick="selectBusiness('medical')">Medical/Clinic</button>
+            </div>
+            <div class="button-row">
+                <button class="primary" onclick="goToStep(2)" id="step1-next">Next →</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: Location & Climate -->
+        <div id="step2" class="step hidden">
+            <div class="step-label">Step 2 of 6</div>
+            <h2>Climate zone</h2>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">Where is your facility located?</p>
+            <div class="button-grid">
+                <button class="option-btn" onclick="selectClimate('hot')">🔥 Hot Climate (AZ, TX, FL, SoCal, NV)</button>
+                <button class="option-btn" onclick="selectClimate('mild')">☀️ Mild Climate (CA Coast, PNW, Mid-Atlantic)</button>
+                <button class="option-btn" onclick="selectClimate('cold')">❄️ Cold Climate (Northeast, Upper Midwest, Mountain)</button>
+            </div>
+            <div class="button-row">
+                <button class="secondary" onclick="goToStep(1)">← Back</button>
+                <button class="primary" onclick="goToStep(3)">Next →</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Building Details -->
+        <div id="step3" class="step hidden">
+            <div class="step-label">Step 3 of 6</div>
+            <h2>Facility size & age</h2>
+            <div class="form-group">
+                <label for="sqft">Square footage</label>
+                <input type="number" id="sqft" placeholder="e.g., 5000">
+            </div>
+            <div class="form-group">
+                <label for="building-age">Building age</label>
+                <select id="building-age">
+                    <option value="new">New (2015 or later) - More efficient</option>
+                    <option value="average" selected>Average (2000-2014) - Standard</option>
+                    <option value="old">Old (Pre-2000) - Less efficient</option>
+                </select>
+                <p class="info-text">Age affects insulation, HVAC efficiency, and lighting systems</p>
+            </div>
+            <div class="button-row">
+                <button class="secondary" onclick="goToStep(2)">← Back</button>
+                <button class="primary" onclick="goToStep(4)">Next →</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Operating Schedule -->
+        <div id="step4" class="step hidden">
+            <div class="step-label">Step 4 of 6</div>
+            <h2>Operating schedule</h2>
+            <div class="two-col">
+                <div class="form-group">
+                    <label for="hours-per-day">Hours per day</label>
+                    <input type="number" id="hours-per-day" value="8" placeholder="e.g., 8">
+                </div>
+                <div class="form-group">
+                    <label for="days-per-week">Days per week</label>
+                    <select id="days-per-week">
+                        <option value="5">5 (Mon-Fri)</option>
+                        <option value="6">6 (Mon-Sat)</option>
+                        <option value="7">7 (Every day)</option>
+                    </select>
+                </div>
+            </div>
+            <div id="seasonal-section" class="hidden">
+                <div class="form-group">
+                    <label for="seasonal">Business type</label>
+                    <select id="seasonal">
+                        <option value="yearround">Year-round operation</option>
+                        <option value="school">Seasonal - School (closed ~3 months)</option>
+                        <option value="seasonal">Seasonal - Resort/Beach (6 months)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="button-row">
+                <button class="secondary" onclick="goToStep(3)">← Back</button>
+                <button class="primary" onclick="goToStep(5)">Next →</button>
+            </div>
+        </div>
+
+        <!-- STEP 5: Staff & Equipment -->
+        <div id="step5" class="step hidden">
+            <div class="step-label">Step 5 of 6</div>
+            <h2>Staff & equipment</h2>
+            <div class="form-group">
+                <label for="employees">Number of employees</label>
+                <input type="number" id="employees" placeholder="e.g., 10">
+                <p class="info-text">Includes computers, monitors, workstation lighting</p>
+            </div>
+            <div class="form-group">
+                <label for="equipment">Special equipment</label>
+                <select id="equipment">
+                    <option value="none">None or minimal</option>
+                    <option value="light">Light (small HVAC unit, modest machinery)</option>
+                    <option value="medium">Medium (large kitchen, walk-in cooler, compressor)</option>
+                    <option value="heavy">Heavy (large machinery, server room, production equipment)</option>
+                </select>
+                <p class="info-text">High-power loads like ovens, freezers, or industrial equipment</p>
+            </div>
+            <div class="button-row">
+                <button class="secondary" onclick="goToStep(4)">← Back</button>
+                <button class="primary" onclick="goToStep(6)">Next →</button>
+            </div>
+        </div>
+
+        <!-- STEP 6: Review -->
+        <div id="step6" class="step hidden">
+            <div class="step-label">Step 6 of 6 • Final</div>
+            <h2>Ready?</h2>
+            <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">
+                We've collected all the details. Click below to calculate your precise energy estimate.
+            </p>
+            <div class="button-row">
+                <button class="secondary" onclick="goToStep(5)">← Back</button>
+                <button class="success" onclick="calculateUsage()">Calculate Now</button>
+            </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div id="results" class="hidden">
+            <h2>Your Estimated Annual Usage</h2>
+            
+            <div class="result-box">
+                <div class="result-label">Total Annual Usage</div>
+                <div class="result-number" id="result-total">0</div>
+                <div class="result-unit">kWh per year</div>
+            </div>
+
+            <div id="adjustments-summary" class="adjustments"></div>
+
+            <div class="breakdown">
+                <h3>Usage Breakdown</h3>
+                <div class="breakdown-item">
+                    <span>Building systems (HVAC, lighting, base load):</span>
+                    <strong id="result-building">0</strong>
+                </div>
+                <div class="breakdown-item" id="emp-row">
+                    <span>Employee workstations & devices:</span>
+                    <strong id="result-emp">0</strong>
+                </div>
+                <div class="breakdown-item" id="equip-row">
+                    <span>Special equipment:</span>
+                    <strong id="result-equip">0</strong>
+                </div>
+                <div class="breakdown-item breakdown-total">
+                    <span>Total:</span>
+                    <strong id="result-grand">0</strong>
+                </div>
+            </div>
+
+            <div class="info-box" id="info-box"></div>
+
+            <div class="button-row">
+                <button class="secondary" onclick="resetCalculator()" style="flex: 1;">Calculate Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedBusiness = '';
+        let selectedClimate = '';
+
+        const baselines = {
+            office: { base: 12, empUsage: 2000, name: 'Office' },
+            retail: { base: 20, empUsage: 1500, name: 'Retail Store' },
+            restaurant: { base: 35, empUsage: 1200, name: 'Restaurant' },
+            warehouse: { base: 8, empUsage: 1500, name: 'Warehouse' },
+            manufacturing: { base: 50, empUsage: 3000, name: 'Manufacturing' },
+            gym: { base: 25, empUsage: 1500, name: 'Gym/Fitness' },
+            school: { base: 14, empUsage: 2000, name: 'School', seasonal: 'school' },
+            medical: { base: 18, empUsage: 2000, name: 'Medical/Clinic' }
+        };
+
+        const climateMultipliers = {
+            hot: {
+                office: 1.35, retail: 1.30, restaurant: 1.15, warehouse: 1.20,
+                manufacturing: 1.10, gym: 1.40, school: 1.25, medical: 1.25
+            },
+            mild: {
+                office: 1.0, retail: 1.0, restaurant: 1.0, warehouse: 1.0,
+                manufacturing: 1.0, gym: 1.0, school: 1.0, medical: 1.0
+            },
+            cold: {
+                office: 1.40, retail: 1.35, restaurant: 1.20, warehouse: 1.30,
+                manufacturing: 1.10, gym: 1.35, school: 1.50, medical: 1.40
+            }
+        };
+
+        const buildingAgeMultipliers = {
+            new: 0.75,
+            average: 1.0,
+            old: 1.30
+        };
+
+        const equipmentAddition = {
+            none: 0,
+            light: 5000,
+            medium: 12000,
+            heavy: 25000
+        };
+
+        function selectBusiness(type) {
+            selectedBusiness = type;
+            document.querySelectorAll('#step1 .option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+
+            // Show seasonal section only for schools
+            if (type === 'school') {
+                document.getElementById('seasonal-section').classList.remove('hidden');
+                document.getElementById('seasonal').value = 'school';
+            } else {
+                document.getElementById('seasonal-section').classList.add('hidden');
+                document.getElementById('seasonal').value = 'yearround';
+            }
+        }
+
+        function selectClimate(type) {
+            selectedClimate = type;
+            document.querySelectorAll('#step2 .option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        function goToStep(stepNum) {
+            if (stepNum === 2 && !selectedBusiness) {
+                alert('Please select a business type');
+                return;
+            }
+            if (stepNum === 3 && !selectedClimate) {
+                alert('Please select a climate zone');
+                return;
+            }
+            if (stepNum === 4 && !document.getElementById('sqft').value) {
+                alert('Please enter square footage');
+                return;
+            }
+
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.add('hidden');
+            });
+            document.getElementById('step' + stepNum).classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function calculateUsage() {
+            const sqftNum = parseFloat(document.getElementById('sqft').value);
+            const empNum = parseFloat(document.getElementById('employees').value) || 0;
+            const hoursNum = parseFloat(document.getElementById('hours-per-day').value) || 8;
+            const daysNum = parseFloat(document.getElementById('days-per-week').value) * 52;
+            const buildingAge = document.getElementById('building-age').value;
+            const equipment = document.getElementById('equipment').value;
+            const seasonal = document.getElementById('seasonal').value;
+
+            if (!selectedBusiness || !selectedClimate || !sqftNum) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const baseline = baselines[selectedBusiness];
+            const climateMultiplier = climateMultipliers[selectedClimate][selectedBusiness];
+            const ageMultiplier = buildingAgeMultipliers[buildingAge];
+            
+            const operatingHours = hoursNum * daysNum;
+            const standardHours = 2000;
+            
+            // Calculate base building usage
+            let baseUsage = (sqftNum / 1000) * baseline.base;
+            baseUsage = baseUsage * climateMultiplier * ageMultiplier;
+            baseUsage = baseUsage * (operatingHours / standardHours);
+
+            // Apply seasonal if applicable
+            if (seasonal === 'school') {
+                baseUsage = baseUsage * 0.71; // 71% of year due to breaks
+            } else if (seasonal === 'seasonal') {
+                baseUsage = baseUsage * 0.50; // 50% of year (6 months)
+            }
+
+            // Employee usage
+            const employeeUsage = empNum * baseline.empUsage;
+
+            // Equipment usage
+            const equipUsage = equipmentAddition[equipment];
+
+            const totalUsage = baseUsage + employeeUsage + equipUsage;
+
+            // Create adjustments summary
+            const adjustmentsList = [];
+            adjustmentsList.push(`<strong>Climate:</strong> ${selectedClimate === 'hot' ? 'Hot' : selectedClimate === 'mild' ? 'Mild' : 'Cold'} (${(climateMultiplier * 100).toFixed(0)}% of base)`);
+            adjustmentsList.push(`<strong>Building Age:</strong> ${buildingAge === 'new' ? 'New' : buildingAge === 'average' ? 'Average' : 'Old'} (${(ageMultiplier * 100).toFixed(0)}% adjustment)`);
+            adjustmentsList.push(`<strong>Operating Hours:</strong> ${Math.round(hoursNum)} hrs/day × ${daysNum / 52} days/week = ${Math.round(operatingHours)} hours/year`);
+            if (seasonal === 'school') adjustmentsList.push(`<strong>Seasonal:</strong> School (closed ~3 months/year)`);
+            if (seasonal === 'seasonal') adjustmentsList.push(`<strong>Seasonal:</strong> Seasonal business (6 months/year)`);
+
+            document.getElementById('adjustments-summary').innerHTML = adjustmentsList.join('<br>');
+
+            // Display results
+            document.getElementById('result-total').textContent = Math.round(totalUsage).toLocaleString();
+            document.getElementById('result-building').textContent = Math.round(baseUsage).toLocaleString() + ' kWh';
+            document.getElementById('result-emp').textContent = Math.round(employeeUsage).toLocaleString() + ' kWh';
+            document.getElementById('result-equip').textContent = Math.round(equipUsage).toLocaleString() + ' kWh';
+            document.getElementById('result-grand').textContent = Math.round(totalUsage).toLocaleString() + ' kWh';
+
+            // Show/hide rows
+            document.getElementById('emp-row').style.display = empNum > 0 ? 'flex' : 'none';
+            document.getElementById('equip-row').style.display = equipUsage > 0 ? 'flex' : 'none';
+
+            // Info box
+            const infoBox = document.getElementById('info-box');
+            infoBox.innerHTML = `
+                <strong>✓ Estimate Accuracy:</strong> ±20% (good for budgeting)<br>
+                <strong>Baseline:</strong> ${baseline.name} in ${selectedClimate === 'hot' ? 'hot' : selectedClimate === 'mild' ? 'mild' : 'cold'} climate<br>
+                <strong>Note:</strong> Actual usage may vary based on occupancy patterns, equipment maintenance, and local conditions.
+            `;
+
+            // Hide all steps, show results
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.add('hidden');
+            });
+            document.getElementById('results').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function resetCalculator() {
+            selectedBusiness = '';
+            selectedClimate = '';
+            document.getElementById('sqft').value = '';
+            document.getElementById('employees').value = '';
+            document.getElementById('hours-per-day').value = '8';
+            document.getElementById('days-per-week').value = '5';
+            document.getElementById('building-age').value = 'average';
+            document.getElementById('equipment').value = 'none';
+            document.getElementById('seasonal').value = 'yearround';
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.add('hidden');
+            });
+            document.getElementById('step1').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
